@@ -10,65 +10,41 @@ use App\Models\pengumuman;
 
 class pengumumans extends BaseController
 {
-    public function read($from,$to,$id)
+    public function read($from, $to)
     {
+        $read = pengumuman::orderBy('id', 'DESC')->skip($from)->take($to)->get();
 
-        $validation = auth::where('id_user',$id)->count();
-
-        if ($validation >= 1){
-            $read = pengumuman::orderBy('id', 'DESC')
-                ->skip($from)
-                ->take($to)
-                ->get();
-            $readcount = count($read);
-            for ($i = 0; $i < $readcount; $i++){
-                $read[$i]['attachment'] = 'http://abe.intiru.com/UploadedFile/pengumuman/'.$read[$i]['attachment'];
-            }
-            $data = [
-                'status' => 'Success',
-                'message' => 'Data Dapat Di Akses',
-                'data' => $read
-            ];
-            return $data;
-        }else{
-            $data = [
-                'status' => 'Error',
-                'message' => 'Akun Belum Login',
-                'data' => ''
-            ];
-            return $data;
+        $readcount = count($read);
+        for ($i = 0; $i < $readcount; $i++) {
+            //            $read[$i]['attachment'] = 'http://abe.intiru.com/UploadedFile/pengumuman/'.$read[$i]['attachment'];
+            $read[$i]['attachment'] = 'https://admin-abe.anyusagita.com/UploadedFile/pengumuman/' . $read[$i]['attachment'];
         }
+        $data = [
+            'status' => 'Success',
+            'message' => 'Data Dapat Di Akses',
+            'data' => $read
+        ];
+        return $data;
     }
-    public function search($from,$to,$id,$search)
+    public function search($from, $to, $search)
     {
-        $validation = auth::where('id_user',$id)->count();
-        if ($validation >= 1){
-            $read = pengumuman::where('judul', 'LIKE', $search.'%')
-                ->orderBy('id', 'DESC')
-//                    ->skip($from)
-//                    ->take($to)
-                ->get();
-            $readcount = count($read);
-            for ($i = 0; $i < $readcount; $i++){
-                $read[$i]['attachment'] = 'http://abe.intiru.com/UploadedFile/pengumuman/'.$read[$i]['attachment'];
-            }
-            $data = [
-                'status' => 'Success',
-                'message' => 'Data Dapat Di Akses',
-                'data' => $read
-            ];
-            return $data;
-        }else{
-            $data = [
-                'status' => 'Error',
-                'message' => 'Akun Belum Login',
-                'data' => ''
-            ];
-            return $data;
+        $replacingTitle = str_replace('-', ' ', $search);
+        $replacing = str_replace('%20', ' ', $search);
+        $read = pengumuman::where('judul', 'LIKE', $replacing . '%')
+            ->orWhere('deskripsi', 'LIKE', $replacing . '%')
+            ->skip($from)
+            ->take($to)
+            ->get();
+        $readcount = count($read);
+        for ($i = 0; $i < $readcount; $i++) {
+            //            $read[$i]['attachment'] = 'http://abe.intiru.com/UploadedFile/pengumuman/'.$read[$i]['attachment'];
+            $read[$i]['attachment'] = 'https://admin-abe.anyusagita.com/UploadedFile/pengumuman/' . $read[$i]['attachment'];
         }
-
-
-
+        $data = [
+            'status' => 'Success',
+            'message' => 'Data Dapat Di Akses',
+            'data' => $read
+        ];
+        return $data;
     }
-
 }

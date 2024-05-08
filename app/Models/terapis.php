@@ -13,4 +13,6 @@ class terapis extends Model
     protected $fillable = ['id','nama','alamat','telp']; //whitelist == yang diperbolehkan
     protected $primaryKey = 'id';
     protected $dates = ['deleted_at'];
+
+
 }

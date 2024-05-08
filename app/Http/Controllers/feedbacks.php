@@ -12,12 +12,14 @@ class feedbacks extends Controller
         $judul = $req->judul;
         $deskripsi = $req->deskripsi;
         $id_user = $req->id_user;
+        $versi = $req->versi;
 
         if (isset($judul) || isset($deskripsi)){
             $feedback = new feedback;
             $feedback->judul = $judul;
             $feedback->deskripsi = $deskripsi;
             $feedback->id_user = $id_user;
+            $feedback->versi_aplikasi = $versi;
             $feedback->save();
             $data = [
                 'status' => 'Success',

@@ -10,80 +10,40 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class respons extends BaseController
 {
-    public function read($id,$perkembangan)
+    public function readorturespon($id)
     {
-        $validation = auth::where('id_user',$id)->count();
-
-        if ($validation >= 1){
-            $read = respon::where('id_perkembangan', $perkembangan)
-                ->with('terapis:id,nama_terapis')
-                ->with('orangtua:id,nama_orangtua')
-                ->get();
-            $data = [
-                'status' => 'Success',
-                'message' => 'Data Dapat Di Akses',
-                'data' => $read
-            ];
-            return $data;
-        }else{
-            $data = [
-                'status' => 'Error',
-                'message' => 'Akun Belum Login',
-                'data' => ''
-            ];
-            return $data;
-        }
+        $read = respon::where('id_perkembangan','=',$id)
+            ->orderBy('id', 'DESC')
+            ->with('orangtua:id,nama')
+            ->get();
+        $data = [
+            'status' => 'Success',
+            'message' => 'Data Dapat Di Akses',
+            'data' => $read
+        ];
+        return $data;
     }
-    public function createortu(Request $req){
-        $deskripsi = $req->deskripsi;
-        $id_user = $req->id_user;
-        $id_perkembangan= $req->id_perkembangan;
-        $user = Pengguna::where('id',$id_user)->first();
-
-        if (isset($deskripsi)){
+    public function ortucreate(Request $req){
+        if (isset($req->deskripsi)){
             $respon = new respon;
-            $respon->deskripsi = $req->deskripsi;
-            $respon->id_orang_tua = $user->id_type;
-            $respon->id_terapis = 0;
             $respon->id_perkembangan = $req->id_perkembangan;
+            $respon->id_orangtua = $req->id_orangtua;
+            $respon->deskripsi = $req->deskripsi;
             $respon->save();
             $data = [
                 'status' => 'Success',
-                'message' => 'Respon Telah Disampaikan',
+                'message' => 'Perkembangan berhasil ditambahkan',
                 'data' => ''
             ];
-            return $data;
         }else{
             $data = [
                 'status' => 'Error',
-                'message' => 'Harap Lengkapi kolom judul dan deskripsi untuk mengajukan keluhan',
+                'message' => 'Harap Lengkapi form terlebih dahulu',
                 'data' => ''
             ];
-            return $data;
-        }
-    }
-    public function deleteortu($id,$id2){
-        $validation = auth::where('id_user',$id)->count();
-        if ($validation >= 1){
-            $perkembangan = respon::find($id2);
-            $perkembangan->delete();
-
-            $data = [
-                'status' => 'Success',
-                'message' => 'Data Berhasil Di Hapus',
-                'data' => ''
-            ];
-            return $data;
-        }else{
-            $data = [
-                'status' => 'Error',
-                'message' => 'Akun Belum Login',
-                'data' => ''
-            ];
-            return $data;
         }
 
 
-
+        return $data;
     }
 }
